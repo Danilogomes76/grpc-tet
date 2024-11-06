@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package chat;
+
+service ChatService {
+  rpc StreamMessages (stream MessageRequest) returns (stream MessageResponse);  // Bidirecional
+}
+
+message MessageRequest {
+  string content = 1;
+  string sender = 2;
+  string roomId = 3;
+  string timestamp = 4;
+}
+
+message MessageResponse {
+  string content = 1;
+  string sender = 2;
+  string timestamp = 3;
+}

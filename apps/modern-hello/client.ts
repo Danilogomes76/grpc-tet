@@ -3,7 +3,7 @@ import { cac } from "cac";
 
 import { createGrpcClient } from "./connect-node-extra/create-grpc-client";
 import logger from "./logger";
-import { Greeter } from "./types/protos/hello_connectweb";
+import { ChatService } from "./types/protos/chat_connectweb";
 
 const cli = cac();
 
@@ -25,16 +25,19 @@ const parsed = cli.parse();
 
 logger.info(JSON.stringify(parsed, null, 2));
 
-const client = createGrpcClient(Greeter, {
+const client = createGrpcClient(ChatService, {
   address: parsed.options.server,
   channelCredentials: grpc.ChannelCredentials.createInsecure(),
   clientOptions: {},
   binaryOptions: {},
 });
 
-client.sayHello({ name: parsed.options.user }, function (err, response) {
-  if (err) {
-    logger.error(err);
-  }
-  logger.info("Greeting:", response?.message);
-});
+client.streamMessages(
+  { content: parsed.options.user },
+  function (err, response) {
+    if (err) {
+      logger.error(err);
+    }
+    logger.info("Greeting:", response?.content);
+  },
+);
